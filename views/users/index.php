@@ -33,6 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value'=>'group.name',
             ],
             'email:email',
+            'created_at',
             'photo',
 
             ['class' => 'yii\grid\ActionColumn'],
