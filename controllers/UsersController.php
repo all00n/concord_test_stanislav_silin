@@ -94,6 +94,11 @@ class UsersController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            if($model->imageFile = UploadedFile::getInstance($model, 'imageFile')) {
+                $model->photo = $model->upload($model->id);
+                $model->imageFile = null;
+                $model->save();
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
