@@ -28,14 +28,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'login',
-            'password',
+            [
+                'attribute'=>'group_id',
+                'value'=>'group.name',
+            ],
             'email:email',
-            'group_id',
-            //'photo',
-            //'created_at',
-            //'updated_at',
+            'photo',
 
             ['class' => 'yii\grid\ActionColumn'],
+
         ],
     ]); ?>
     <?php Pjax::end(); ?>

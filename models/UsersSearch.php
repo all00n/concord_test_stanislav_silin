@@ -17,8 +17,8 @@ class UsersSearch extends Users
     public function rules()
     {
         return [
-            [['id', 'group_id'], 'integer'],
-            [['login', 'password', 'email', 'photo', 'created_at', 'updated_at'], 'safe'],
+            [['id'], 'integer'],
+            [['login', 'password', 'email', 'group_id'], 'safe'],
         ];
     }
 
@@ -42,8 +42,6 @@ class UsersSearch extends Users
     {
         $query = Users::find();
 
-        // add conditions that should always apply here
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -56,18 +54,18 @@ class UsersSearch extends Users
             return $dataProvider;
         }
 
+        $query->joinWith('group');
+
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'group_id' => $this->group_id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'users.id' => $this->id,
+            'users.created_at' => $this->created_at,
+            'users.updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'login', $this->login])
-            ->andFilterWhere(['like', 'password', $this->password])
-            ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'photo', $this->photo]);
+        $query->andFilterWhere(['like', 'users.login', $this->login])
+            ->andFilterWhere(['like', 'users.email', $this->email])
+            ->andFilterWhere(['like', 'groups.name', $this->group_id]);
 
         return $dataProvider;
     }

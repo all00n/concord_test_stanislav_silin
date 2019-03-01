@@ -3,7 +3,7 @@
 namespace app\models;
 
 use Yii;
-
+use yii\web\UploadedFile;
 /**
  * This is the model class for table "users".
  *
@@ -17,9 +17,15 @@ use Yii;
  * @property string $updated_at
  *
  * @property Groups $group
+ *
  */
 class Users extends \yii\db\ActiveRecord
 {
+    /**
+     * @var UploadedFile
+     */
+    public $imageFile;
+
     /**
      * {@inheritdoc}
      */
@@ -34,9 +40,9 @@ class Users extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['imageFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],
             [['login', 'password', 'email', 'group_id'], 'required'],
-            [['group_id'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['created_at', 'updated_at','group_id'], 'safe'],
             [['login', 'password', 'email', 'photo'], 'string', 'max' => 255],
             [['login'], 'unique'],
             [['group_id'], 'exist', 'skipOnError' => true, 'targetClass' => Groups::className(), 'targetAttribute' => ['group_id' => 'id']],
@@ -49,11 +55,11 @@ class Users extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id' => 'User ID',
             'login' => 'Login',
             'password' => 'Password',
             'email' => 'Email',
-            'group_id' => 'Group ID',
+            'group_id' => 'Group',
             'photo' => 'Photo',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
@@ -66,5 +72,26 @@ class Users extends \yii\db\ActiveRecord
     public function getGroup()
     {
         return $this->hasOne(Groups::className(), ['id' => 'group_id']);
+    }
+
+    public function getGroupName(){
+        return $this->group->name;
+    }
+
+    public function upload($user_id)
+    {
+        if ($this->validate()) {
+             $this->imageFile->saveAs('uploads/users_photo/' . $user_id . '.' . $this->imageFile->extension);
+             return 'uploads/users_photo/' . $user_id . '.' . $this->imageFile->extension;
+        }
+        return false;
+
+    }
+    public function beforeSave($insert) {
+
+        $this->password = md5($this->password);
+
+        return true;
+
     }
 }

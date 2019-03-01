@@ -8,6 +8,8 @@ use app\models\UsersSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\UploadForm;
+use yii\web\UploadedFile;
 
 /**
  * UsersController implements the CRUD actions for Users model.
@@ -66,7 +68,12 @@ class UsersController extends Controller
     {
         $model = new Users();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($request = $model->load(Yii::$app->request->post()) && $model->save()) {
+            if($model->imageFile = UploadedFile::getInstance($model, 'imageFile')) {
+                $model->photo = $model->upload($model->id);
+                $model->imageFile = null;
+                $model->save();
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
